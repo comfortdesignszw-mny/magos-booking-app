@@ -8,7 +8,7 @@
    Digits only, full international format, no + and no spaces.
    078 081 4597  ->  263780814597
    -------------------------------------------------------------------------- */
-const MAGOS_WHATSAPP = "263780814597"; // ← single source of truth for the order destination
+const MAGOS_WHATSAPP = "263773865210"; // ← single source of truth for the order destination
 
 /* --------------------------------------------------------------------------
    Store details (from the shop's Google Maps listing)
@@ -17,8 +17,8 @@ const SHOP = {
   name: "Magos Burgers and Shakes",
   short: "Magos",
   address: "Millenium Mall, G. Silundika Street, between 5th & 6th Avenue, Bulawayo",
-  phone: "078 081 4597",
-  phoneAlt: "073 865 210",
+  phone: "0773 865 210",
+  phoneAlt: "0780814597",
   closes: "18:00"
 };
 
