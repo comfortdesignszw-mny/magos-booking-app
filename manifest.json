@@ -1,0 +1,53 @@
+{
+  "name": "Magos Burgers & Shakes — Order & Book",
+  "short_name": "Magos",
+  "description": "Browse the Magos Burgers and Shakes menu and send your order straight to the shop on WhatsApp. Millenium Mall, Bulawayo.",
+  "id": "/webpages/magos-order-app/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#14110D",
+  "theme_color": "#14110D",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["food", "shopping", "business"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "See the menu",
+      "short_name": "Menu",
+      "description": "Jump straight to the food",
+      "url": "./index.html#menu",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Find us",
+      "short_name": "Find us",
+      "description": "Address, hours and directions",
+      "url": "./index.html#find",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

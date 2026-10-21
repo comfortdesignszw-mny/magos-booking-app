@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Magos Burgers &amp; Shakes — Order &amp; Book</title>
+<meta name="description" content="Browse the Magos Burgers and Shakes menu and place your order on WhatsApp. Flame-grilled burgers and hand-spun shakes, Millenium Mall, Bulawayo.">
+<meta name="theme-color" content="#14110D">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/icon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Magos">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+/* Fonts are served from /assets so the app looks identical with no connection. */
+@font-face{font-family:"Anton";font-style:normal;font-weight:400;font-display:swap;
+  src:url("assets/anton-latin.woff2") format("woff2")}
+@font-face{font-family:"DM Sans";font-style:normal;font-weight:400 700;font-display:swap;
+  src:url("assets/dmsans-latin.woff2") format("woff2")}
+
+:root{
+  /* Palette lifted from the live Magos website */
+  --ink:#14110D;
+  --char:#1E1A14;
+  --char-2:#272219;
+  --char-3:#332C21;
+  --cream:#F7EFDE;
+  --cream-2:#FFFBF3;
+  --amber:#F0A81E;
+  --amber-deep:#D2870A;
+  --rust:#B4402A;
+  --green:#2E9E5B;
+  --muted:#8C8272;
+  --muted-dark:#A99E8B;
+  --line:rgba(20,17,13,.14);
+  --line-dark:rgba(247,239,222,.15);
+  --r-lg:18px;
+  --r-md:12px;
+  --r-pill:999px;
+  --shadow:0 18px 40px -24px rgba(20,17,13,.55);
+  --shadow-lg:0 30px 70px -30px rgba(20,17,13,.65);
+  --font-display:"Anton","Arial Narrow",Impact,sans-serif;
+  --font-body:"DM Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --wrap:1120px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--font-body);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(96px + var(--safe-b));
+}
+body.is-locked{overflow:hidden}
+@media (min-width:900px){ body{padding-bottom:0} }
+img{max-width:100%;display:block}
+button{font:inherit;color:inherit}
+a{color:inherit}
+h1,h2,h3,h4{margin:0;font-family:var(--font-display);font-weight:400;letter-spacing:.01em;text-transform:uppercase;line-height:1.02}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+:focus-visible{outline:3px solid var(--amber-deep);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 20px}
+
+/* ===================== top bar ===================== */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(20,17,13,.97);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line-dark);
+  color:var(--cream);
+}
+.topbar__inner{display:flex;align-items:center;gap:12px;min-height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;margin-right:auto;min-width:0}
+.brand__mark{
+  width:38px;height:38px;flex:0 0 38px;border-radius:10px;background:var(--amber);
+  color:var(--ink);display:grid;place-items:center;font-family:var(--font-display);
+  font-size:1.42rem;line-height:1;padding-top:.12em;transform:rotate(-3deg);
+}
+.brand__text{display:flex;flex-direction:column;line-height:1;min-width:0}
+.brand__text strong{font-family:var(--font-display);font-size:1.16rem;letter-spacing:.03em;text-transform:uppercase}
+.brand__text small{font-size:.55rem;letter-spacing:.17em;text-transform:uppercase;color:var(--muted-dark);margin-top:.3rem;white-space:nowrap}
+.topbar__meta{display:none;align-items:center;gap:6px;font-size:.74rem;color:var(--muted-dark)}
+.topbar__link{
+  display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-size:.8rem;font-weight:500;
+  padding:.5rem .8rem;border:1px solid var(--line-dark);border-radius:var(--r-pill);
+  color:var(--cream);transition:border-color .18s,color .18s;
+}
+.topbar__link:hover{border-color:var(--amber);color:var(--amber)}
+@media (min-width:620px){ .topbar__meta{display:flex} }
+
+/* ===================== hero ===================== */
+.hero{
+  position:relative;overflow:hidden;color:var(--cream);
+  background:
+    radial-gradient(120% 90% at 82% 0%, #2C2418 0%, transparent 58%),
+    radial-gradient(90% 70% at 0% 100%, #241E15 0%, transparent 62%),
+    var(--ink);
+  padding:34px 0 0;
+  border-bottom:1px solid var(--line-dark);
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(247,239,222,.035) 1px,transparent 1px);
+  background-size:100% 34px;
+}
+.hero__inner{position:relative;z-index:1;padding-bottom:30px}
+.hero__eyebrow{
+  display:inline-flex;align-items:center;gap:8px;margin-bottom:16px;
+  font-size:.66rem;letter-spacing:.19em;text-transform:uppercase;color:var(--amber);font-weight:700;
+}
+.hero__eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(46,158,91,.18)}
+.hero h1{font-size:clamp(2.5rem,10.5vw,4.6rem);line-height:.92}
+.hero h1 .amp{color:var(--amber)}
+.hero__sub{
+  margin-top:14px;max-width:34ch;color:#D9CFBC;font-size:.96rem;
+}
+.hero__sub em{font-style:normal;color:var(--cream);font-weight:700}
+.hero__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.hero__note{
+  display:flex;align-items:center;gap:7px;margin-top:16px;font-size:.75rem;color:var(--muted-dark);
+}
+@media (min-width:900px){
+  .hero{padding:52px 0 0}
+  .hero__inner{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center;padding-bottom:46px}
+  .hero__sub{font-size:1.05rem;max-width:40ch}
+}
+
+/* rating card */
+.rating-card{
+  margin-top:24px;background:rgba(247,239,222,.05);border:1px solid var(--line-dark);
+  border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;gap:14px;
+}
+.rating-card__score{font-family:var(--font-display);font-size:2rem;line-height:1}
+.rating-card__body{display:flex;flex-direction:column;gap:3px;min-width:0}
+.stars{display:flex;gap:2px;color:var(--amber)}
+.stars svg{width:13px;height:13px;fill:currentColor}
+.stars .half{opacity:.45}
+.rating-card__body small{font-size:.72rem;color:var(--muted-dark);line-height:1.35}
+@media (min-width:900px){ .rating-card{margin-top:26px;max-width:400px} }
+
+/* hero photo placeholder */
+.hero__art{
+  margin-top:10px;border-radius:var(--r-lg);overflow:hidden;
+  border:1px dashed rgba(240,168,30,.5);background:rgba(240,168,30,.06);
+  min-height:190px;display:grid;place-items:center;padding:22px;text-align:center;
+}
+.hero__art .ph__title{color:var(--amber)}
+.hero__art .ph__hint{color:var(--muted-dark)}
+@media (min-width:900px){ .hero__art{margin-top:0;min-height:320px} }
+
+/* ===================== buttons ===================== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.9rem 1.35rem;border-radius:var(--r-pill);border:2px solid transparent;
+  font-weight:700;font-size:.9rem;line-height:1;text-decoration:none;cursor:pointer;
+  transition:transform .15s ease,background-color .15s,color .15s,border-color .15s;
+  white-space:nowrap;font-family:var(--font-body);
+}
+.btn:active{transform:scale(.975)}
+.btn--amber{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+.btn--amber:hover{background:var(--amber-deep);border-color:var(--amber-deep)}
+.btn--ghost{background:transparent;color:var(--cream);border-color:rgba(247,239,222,.32)}
+.btn--ghost:hover{border-color:var(--cream);background:rgba(247,239,222,.07)}
+.btn--dark{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.btn--dark:hover{background:var(--char-3)}
+.btn--green{background:#1FA855;color:#fff;border-color:#1FA855}
+.btn--green:hover{background:#178C45;border-color:#178C45}
+.btn--block{width:100%}
+.btn--sm{padding:.62rem .95rem;font-size:.82rem}
+.btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 17px}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+/* ===================== placeholder blocks ===================== */
+.ph{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:7px;text-align:center;padding:20px 16px;
+  background:
+    repeating-linear-gradient(45deg,rgba(20,17,13,.022) 0 8px,transparent 8px 16px),
+    rgba(20,17,13,.03);
+  border:1.5px dashed rgba(20,17,13,.24);border-radius:var(--r-md);
+  color:var(--muted);
+}
+.ph__icon{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.6;opacity:.72}
+.ph__title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#5A5145}
+.ph__hint{font-size:.68rem;line-height:1.4;max-width:24ch}
+.ph__tag{
+  position:absolute;top:8px;left:8px;font-size:.54rem;letter-spacing:.11em;text-transform:uppercase;
+  font-weight:700;background:rgba(20,17,13,.72);color:var(--cream);padding:.2rem .42rem;border-radius:4px;
+}
+
+/* ===================== section heads ===================== */
+.sec{padding:38px 0 6px}
+.sec--tight{padding-top:26px}
+.sec__head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.sec__eyebrow{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber-deep);font-weight:700;margin-bottom:6px}
+.sec h2{font-size:clamp(1.6rem,6vw,2.3rem)}
+.sec__sub{font-size:.85rem;color:var(--muted);max-width:46ch}
+
+/* ===================== search + filters ===================== */
+.sticky-tools{
+  position:sticky;top:64px;z-index:30;background:var(--cream);
+  padding:12px 0 10px;border-bottom:1px solid transparent;transition:box-shadow .2s,border-color .2s;
+}
+.sticky-tools.is-stuck{box-shadow:0 10px 24px -22px rgba(20,17,13,.8);border-color:var(--line)}
+.search{position:relative;margin-bottom:10px}
+.search svg{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;
+  fill:none;stroke:var(--muted);stroke-width:2;pointer-events:none;
+}
+.search input{
+  width:100%;padding:.85rem .9rem .85rem 2.7rem;border-radius:var(--r-pill);
+  border:1.5px solid var(--line);background:var(--cream-2);font-size:.9rem;color:var(--ink);
+  font-family:var(--font-body);appearance:none;
+}
+.search input::placeholder{color:#A2988A}
+.search input:focus{outline:none;border-color:var(--amber-deep);box-shadow:0 0 0 3px rgba(240,168,30,.2)}
+.search__clear{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);width:30px;height:30px;
+  border:none;background:rgba(20,17,13,.07);border-radius:50%;cursor:pointer;display:none;
+  align-items:center;justify-content:center;
+}
+.search__clear svg{position:static;transform:none;width:14px;height:14px;stroke:var(--ink);stroke-width:2.4}
+.search.has-value .search__clear{display:flex}
+.filters{
+  display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.filters::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto;padding:.5rem .85rem;border-radius:var(--r-pill);border:1.5px solid var(--line);
+  background:transparent;font-size:.79rem;font-weight:600;cursor:pointer;color:#4A4237;
+  transition:background-color .15s,color .15s,border-color .15s;white-space:nowrap;
+}
+.chip:hover{border-color:#B9AE9C}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.chip__count{opacity:.55;font-weight:400;margin-left:.25rem}
+
+/* ===================== menu grid ===================== */
+.menu-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:16px 0 12px;font-size:.76rem;color:var(--muted);
+}
+.menu-head strong{color:var(--ink);font-weight:700}
+.menu-grid{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:600px){ .menu-grid{grid-template-columns:repeat(2,1fr);gap:14px} }
+@media (min-width:980px){ .menu-grid{grid-template-columns:repeat(3,1fr)} }
+
+.dish{
+  background:var(--cream-2);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:14px;display:flex;flex-direction:column;gap:8px;
+  transition:border-color .18s,box-shadow .18s,transform .18s;
+}
+.dish:hover{border-color:rgba(240,168,30,.65);box-shadow:var(--shadow)}
+.dish.is-in-cart{border-color:var(--amber-deep);box-shadow:0 0 0 1px var(--amber-deep) inset}
+.dish__top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.dish__name{font-size:1.06rem;line-height:1.12;letter-spacing:.005em;text-transform:none;font-family:var(--font-body);font-weight:700}
+.dish__price{
+  font-family:var(--font-display);font-size:1.12rem;color:var(--ink);white-space:nowrap;
+  line-height:1;padding-top:2px;
+}
+.dish__price small{font-family:var(--font-body);font-size:.6rem;color:var(--muted);display:block;text-align:right;margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+.dish__desc{font-size:.79rem;color:#6B6154;line-height:1.45;flex:1}
+.dish__tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+.dish__tags li{
+  font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;
+  padding:.2rem .42rem;border-radius:4px;background:rgba(20,17,13,.06);color:#6B6154;
+}
+.dish__tags li.hot{background:rgba(240,168,30,.22);color:#8A5A00}
+.dish__foot{display:flex;align-items:center;gap:8px;margin-top:4px}
+.qty{
+  display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:var(--r-pill);
+  overflow:hidden;background:var(--cream);
+}
+.qty button{
+  width:32px;height:34px;border:none;background:transparent;cursor:pointer;font-size:1.05rem;
+  font-weight:700;color:var(--ink);display:grid;place-items:center;line-height:1;
+}
+.qty button:hover{background:rgba(20,17,13,.06)}
+.qty output{min-width:24px;text-align:center;font-size:.85rem;font-weight:700;font-variant-numeric:tabular-nums}
+.dish__add{flex:1;padding:.62rem .5rem;font-size:.82rem;position:relative}
+.dish__add.is-added{background:var(--green);border-color:var(--green);color:#fff}
+/* Flash "Added" without touching the DOM — children stay intact so the price
+   label is never destroyed mid-interaction. */
+.dish__add.is-added > *{visibility:hidden}
+.dish__add.is-added::after{
+  content:"Added ✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;
+}
+.size-select{
+  flex:0 0 auto;padding:.55rem 1.5rem .55rem .6rem;border-radius:var(--r-pill);
+  border:1.5px solid var(--line);background:var(--cream);font-family:var(--font-body);
+  font-size:.76rem;font-weight:600;color:var(--ink);cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%2314110D' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .55rem center;background-size:9px;
+}
+.size-select:focus{outline:none;border-color:var(--amber-deep);box-shadow:0 0 0 3px rgba(240,168,30,.2)}
+.in-cart{
+  flex:0 0 auto;display:grid;place-items:center;min-width:26px;height:26px;padding:0 6px;
+  background:var(--amber);color:var(--ink);border-radius:var(--r-pill);
+  font-size:.72rem;font-weight:700;font-variant-numeric:tabular-nums;
+}
+.in-cart[hidden]{display:none}
+
+/* empty state */
+.empty{
+  text-align:center;padding:44px 20px;border:1.5px dashed var(--line);border-radius:var(--r-lg);
+  color:var(--muted);font-size:.88rem;background:rgba(20,17,13,.02);
+}
+.empty strong{display:block;font-family:var(--font-display);font-size:1.3rem;color:var(--ink);margin-bottom:6px;text-transform:uppercase}
+
+/* ===================== combo banner ===================== */
+.combo-strip{
+  margin-top:34px;background:var(--ink);color:var(--cream);border-radius:var(--r-lg);
+  padding:22px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden;
+}
+.combo-strip::before{
+  content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle,rgba(240,168,30,.22),transparent 70%);
+}
+.combo-strip h3{font-size:1.5rem;line-height:1.05}
+.combo-strip p{font-size:.84rem;color:#CFC4B0;max-width:44ch}
+.combo-strip .btn{align-self:flex-start;position:relative;z-index:1}
+@media (min-width:760px){
+  .combo-strip{flex-direction:row;align-items:center;justify-content:space-between;gap:26px;padding:24px 28px}
+  .combo-strip .btn{align-self:auto;flex:0 0 auto}
+}
+
+/* ===================== info ===================== */
+.info-grid{display:grid;gap:12px;margin-top:16px}
+@media (min-width:760px){ .info-grid{grid-template-columns:1.1fr .9fr} }
+.card{
+  background:var(--cream-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;
+}
+.card__label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber-deep);font-weight:700;margin-bottom:10px}
+.card h3{font-size:1.15rem;margin-bottom:8px}
+.card p{font-size:.85rem;color:#5A5145;line-height:1.5}
+.hours{display:flex;flex-direction:column;gap:0}
+.hours li{
+  display:flex;justify-content:space-between;gap:12px;padding:.55rem 0;font-size:.84rem;
+  border-bottom:1px solid rgba(20,17,13,.07);
+}
+.hours li:last-child{border-bottom:none}
+.hours li span:first-child{color:#5A5145}
+.hours li span:last-child{font-weight:700;font-variant-numeric:tabular-nums}
+.hours li.today{background:rgba(240,168,30,.14);margin:0 -18px;padding-left:18px;padding-right:18px;border-bottom-color:transparent}
+.hours li.today span:first-child{color:var(--ink);font-weight:700}
+.map-ph{aspect-ratio:16/10;min-height:170px;margin-top:14px}
+.contact-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.contact-row a{
+  display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-size:.8rem;font-weight:600;
+  padding:.6rem .9rem;border-radius:var(--r-pill);border:1.5px solid var(--line);background:var(--cream);
+  transition:border-color .15s,background-color .15s;
+}
+.contact-row a:hover{border-color:var(--amber-deep);background:rgba(240,168,30,.1)}
+.contact-row svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.note{font-size:.72rem;color:var(--muted);margin-top:12px;line-height:1.45}
+.note b{color:#5A5145}
+
+/* offline banner */
+.offline-note{
+  display:none;align-items:flex-start;gap:9px;margin-top:14px;padding:11px 13px;
+  background:rgba(180,64,42,.1);border:1px solid rgba(180,64,42,.3);border-radius:var(--r-md);
+  font-size:.78rem;color:#8A3323;line-height:1.4;
+}
+.offline-note.show{display:flex}
+.offline-note svg{width:16px;height:16px;flex:0 0 16px;margin-top:1px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+/* ===================== footer ===================== */
+.foot{background:var(--ink);color:var(--muted-dark);padding:28px 0 calc(28px + var(--safe-b));margin-top:34px;font-size:.78rem}
+.foot__top{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:14px}
+.foot .brand__text strong{color:var(--cream);font-size:1rem}
+.foot .brand__mark{width:32px;height:32px;flex-basis:32px;font-size:1.2rem;border-radius:8px}
+.foot p{line-height:1.5;max-width:60ch}
+.foot p + p{margin-top:8px}
+.foot strong{color:var(--cream)}
+
+/* ===================== cart bar (mobile) ===================== */
+.cartbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:55;
+  padding:10px 14px calc(10px + var(--safe-b));
+  background:rgba(247,239,222,.97);backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+  transform:translateY(115%);transition:transform .28s cubic-bezier(.22,.7,.3,1);
+  display:flex;align-items:center;gap:12px;
+}
+.cartbar.show{transform:none}
+.cartbar__btn{flex:1;position:relative;padding:.95rem 1.1rem}
+.cartbar__count{
+  display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;
+  background:var(--ink);color:var(--amber);border-radius:var(--r-pill);font-size:.74rem;font-weight:700;
+}
+.cartbar__total{font-family:var(--font-display);font-size:1.1rem;margin-left:auto}
+@media (min-width:900px){ .cartbar{display:none} }
+
+/* ===================== modal ===================== */
+.modal{
+  position:fixed;inset:0;z-index:100;display:none;
+  align-items:flex-end;justify-content:center;
+}
+.modal.open{display:flex}
+.modal__scrim{
+  position:absolute;inset:0;background:rgba(20,17,13,.62);backdrop-filter:blur(3px);
+  animation:fadeIn .2s ease;
+}
+.modal__panel{
+  position:relative;width:100%;max-width:520px;max-height:92vh;
+  background:var(--cream);border-radius:22px 22px 0 0;
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:slideUp .3s cubic-bezier(.22,.7,.3,1);
+  box-shadow:var(--shadow-lg);
+}
+@media (min-width:700px){
+  .modal{align-items:center;padding:24px}
+  .modal__panel{border-radius:22px;max-height:88vh;animation:zoomIn .24s ease}
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(28px);opacity:.6}to{transform:none;opacity:1}}
+@keyframes zoomIn{from{transform:scale(.97);opacity:0}to{transform:none;opacity:1}}
+
+.modal__grab{width:38px;height:4px;border-radius:99px;background:rgba(20,17,13,.18);margin:9px auto 0;flex:0 0 auto}
+@media (min-width:700px){ .modal__grab{display:none} }
+.modal__head{
+  display:flex;align-items:center;gap:12px;padding:14px 18px 12px;
+  border-bottom:1px solid var(--line);flex:0 0 auto;
+}
+.modal__head h2{font-size:1.25rem;line-height:1}
+.modal__head p{font-size:.72rem;color:var(--muted);margin-top:3px;font-family:var(--font-body);text-transform:none;letter-spacing:0}
+.modal__close{
+  margin-left:auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);
+  background:transparent;cursor:pointer;display:grid;place-items:center;flex:0 0 34px;
+}
+.modal__close:hover{background:rgba(20,17,13,.06)}
+.modal__close svg{width:15px;height:15px;fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round}
+.modal__body{padding:16px 18px 26px;overflow-y:auto;flex:1 1 auto;-webkit-overflow-scrolling:touch}
+.modal__foot{
+  padding:12px 18px calc(12px + var(--safe-b));border-top:1px solid var(--line);
+  background:var(--cream-2);flex:0 0 auto;
+}
+.modal__foot .total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.modal__foot .total-row span{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.modal__foot .total-row strong{font-family:var(--font-display);font-size:1.5rem;line-height:1}
+
+/* form */
+.field{margin-bottom:13px}
+.field:last-child{margin-bottom:0}
+.field label,.field-set__legend{
+  display:block;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:700;color:#5A5145;margin-bottom:5px;
+}
+.field .opt{font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);font-size:.66rem}
+.field input,.field textarea,.field select{
+  width:100%;padding:.72rem .85rem;border-radius:10px;border:1.5px solid var(--line);
+  background:var(--cream-2);font-family:var(--font-body);font-size:.9rem;color:var(--ink);
+  appearance:none;transition:border-color .15s,box-shadow .15s;
+}
+.field textarea{resize:vertical;min-height:62px;line-height:1.45}
+.field input:focus,.field textarea:focus,.field select:focus{
+  outline:none;border-color:var(--amber-deep);box-shadow:0 0 0 3px rgba(240,168,30,.18);
+}
+.field.has-error input,.field.has-error textarea{border-color:var(--rust);background:rgba(180,64,42,.04)}
+.field__err{display:none;font-size:.7rem;color:var(--rust);margin-top:4px;font-weight:600}
+.field.has-error .field__err{display:block}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:380px){ .field-row{grid-template-columns:1fr} }
+
+/* order type segmented */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:4px}
+.seg input{position:absolute;opacity:0;width:0;height:0}
+.seg label{
+  display:flex;flex-direction:column;align-items:center;gap:3px;padding:.6rem .3rem;
+  border:1.5px solid var(--line);border-radius:10px;background:var(--cream-2);cursor:pointer;
+  font-size:.79rem;font-weight:700;letter-spacing:0;text-transform:none;color:#5A5145;
+  margin:0;transition:border-color .15s,background-color .15s,color .15s;text-align:center;
+  line-height:1.15;
+}
+.seg label svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.seg input:checked + label{border-color:var(--ink);background:var(--ink);color:var(--cream)}
+.seg input:focus-visible + label{outline:3px solid var(--amber-deep);outline-offset:2px}
+
+/* order items summary */
+.summary{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin-bottom:14px;background:var(--cream-2)}
+.summary__head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:.55rem .8rem;background:rgba(20,17,13,.05);
+  font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#5A5145;
+}
+.summary__head button{
+  border:none;background:none;cursor:pointer;font-size:.66rem;font-weight:700;color:var(--amber-deep);
+  letter-spacing:.04em;text-transform:none;padding:0;text-decoration:underline;
+}
+.summary ul{max-height:180px;overflow-y:auto}
+.summary li{
+  display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:start;
+  padding:.55rem .8rem;border-top:1px solid rgba(20,17,13,.06);font-size:.82rem;
+}
+.summary li:first-child{border-top:none}
+.summary .li-qty{font-weight:700;color:var(--amber-deep);font-variant-numeric:tabular-nums;font-size:.78rem;padding-top:1px}
+.summary .li-name{line-height:1.3}
+.summary .li-name small{display:block;font-size:.68rem;color:var(--muted);margin-top:1px}
+.summary .li-amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.summary__total{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:.6rem .8rem;border-top:1.5px solid var(--line);
+  font-weight:700;font-size:.9rem;background:rgba(240,168,30,.1);
+}
+.summary__total span{text-transform:uppercase;letter-spacing:.08em;font-size:.7rem;color:#5A5145}
+.summary__total strong{font-family:var(--font-display);font-size:1.1rem;font-variant-numeric:tabular-nums}
+
+/* info callout */
+.callout{
+  display:flex;gap:9px;padding:10px 12px;border-radius:var(--r-md);font-size:.76rem;line-height:1.45;
+  background:rgba(240,168,30,.14);border:1px solid rgba(210,135,10,.32);color:#6B4A00;margin-bottom:14px;
+}
+.callout svg{width:15px;height:15px;flex:0 0 15px;margin-top:1px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.callout--offline{background:rgba(180,64,42,.1);border-color:rgba(180,64,42,.3);color:#8A3323;display:none}
+.callout--offline.show{display:flex}
+
+/* ===================== success ===================== */
+.success{text-align:center;padding:14px 18px calc(14px + var(--safe-b));overflow-y:auto;flex:1 1 auto}
+.success__ring{
+  width:62px;height:62px;margin:2px auto 10px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(46,158,91,.12);animation:pop .4s cubic-bezier(.2,1.3,.4,1);
+}
+.success__ring svg{width:34px;height:34px}
+.success__ring .circle{
+  stroke:var(--green);stroke-width:2.6;fill:none;stroke-dasharray:151;stroke-dashoffset:151;
+  animation:draw .55s .18s cubic-bezier(.6,0,.4,1) forwards;
+}
+.success__ring .tick{
+  stroke:var(--green);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:36;stroke-dashoffset:36;
+  animation:draw .38s .62s cubic-bezier(.6,0,.4,1) forwards;
+}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:none;opacity:1}}
+@keyframes draw{to{stroke-dashoffset:0}}
+.success h2{font-size:1.5rem;margin-bottom:4px}
+.success__sub{font-size:.8rem;color:var(--muted);max-width:34ch;margin:0 auto 12px;line-height:1.4}
+.success .summary{text-align:left;margin-bottom:12px}
+.success__actions{display:grid;gap:8px}
+@media (min-width:520px){ .success__actions{grid-template-columns:1fr 1fr} .success__actions .btn--block{width:auto} }
+.success__ref{
+  display:inline-block;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;
+  color:var(--muted);margin-bottom:10px;
+}
+.success__ref b{color:var(--ink)}
+.success .summary__head{padding:.45rem .8rem}
+.success .summary li{padding:.42rem .8rem;font-size:.79rem}
+.success .summary__total{padding:.5rem .8rem}
+
+/* desktop cart panel */
+.panel{
+  display:none;position:fixed;top:0;right:0;bottom:0;width:380px;z-index:60;
+  background:var(--cream-2);border-left:1px solid var(--line);
+  flex-direction:column;box-shadow:-20px 0 50px -40px rgba(20,17,13,.6);
+}
+@media (min-width:900px){ .panel.open{display:flex} }
+.panel__head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.panel__head h2{font-size:1.15rem}
+.panel__head button{margin-left:auto;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:none;cursor:pointer;display:grid;place-items:center}
+.panel__head button svg{width:14px;height:14px;fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round}
+.panel__body{flex:1 1 auto;overflow-y:auto;padding:14px 18px}
+.panel__foot{flex:0 0 auto;padding:14px 18px;border-top:1px solid var(--line);background:var(--cream)}
+.panel__empty{text-align:center;padding:40px 10px;color:var(--muted);font-size:.85rem}
+.panel__empty svg{width:44px;height:44px;margin:0 auto 12px;fill:none;stroke:var(--line);stroke-width:1.5}
+.cart-list li{
+  display:grid;grid-template-columns:1fr auto;gap:8px;padding:.7rem 0;
+  border-bottom:1px solid rgba(20,17,13,.07);
+}
+.cart-list__name{font-size:.85rem;font-weight:700;line-height:1.25}
+.cart-list__unit{font-size:.68rem;color:var(--muted);margin-top:1px}
+.cart-list__right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.cart-list__amt{font-weight:700;font-variant-numeric:tabular-nums;font-size:.85rem}
+.cart-list .qty button{width:26px;height:27px;font-size:.95rem}
+.cart-list .qty output{min-width:20px;font-size:.78rem}
+.cart-list__remove{
+  border:none;background:none;cursor:pointer;font-size:.65rem;color:var(--muted);
+  text-decoration:underline;padding:0;
+}
+.cart-list__remove:hover{color:var(--rust)}
+
+/* floating desktop cart button */
+.fab{
+  display:none;position:fixed;right:26px;bottom:26px;z-index:50;
+  align-items:center;gap:10px;padding:.85rem 1.2rem;border-radius:var(--r-pill);
+  background:var(--ink);color:var(--cream);border:none;cursor:pointer;
+  box-shadow:0 16px 34px -18px rgba(20,17,13,.75);font-weight:700;font-size:.88rem;
+  transition:transform .18s,background-color .18s;
+}
+@media (min-width:900px){ .fab.show{display:inline-flex} }
+.fab:hover{transform:translateY(-2px);background:var(--char-3)}
+.fab__count{display:grid;place-items:center;min-width:22px;height:22px;padding:0 6px;background:var(--amber);color:var(--ink);border-radius:var(--r-pill);font-size:.74rem}
+
+/* toast — pinned below the header so it never covers the cart bar,
+   the modal footer or the success actions. */
+.toast{
+  position:fixed;left:50%;top:calc(72px + env(safe-area-inset-top,0px));
+  transform:translate(-50%,-10px);
+  background:var(--ink);color:var(--cream);padding:.62rem 1rem;border-radius:var(--r-pill);
+  font-size:.79rem;font-weight:600;z-index:130;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;white-space:nowrap;max-width:calc(100vw - 32px);
+  overflow:hidden;text-overflow:ellipsis;box-shadow:var(--shadow);
+  border:1px solid rgba(247,239,222,.16);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* install prompt */
+.install{
+  display:none;align-items:center;gap:10px;margin-top:18px;padding:12px 14px;
+  background:rgba(240,168,30,.12);border:1px solid rgba(210,135,10,.3);border-radius:var(--r-md);
+  font-size:.78rem;color:#6B4A00;
+}
+.install.show{display:flex}
+.install span{flex:1;line-height:1.4}
+.install button{
+  border:none;background:var(--ink);color:var(--cream);padding:.45rem .75rem;border-radius:var(--r-pill);
+  font-size:.72rem;font-weight:700;cursor:pointer;flex:0 0 auto;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.4L3.6 20.4l1.4-4.4a8.4 8.4 0 1 1 15.5-4.4Z"/><path d="M9.2 8.4h1.1l.7 1.9-1 .7a6 6 0 0 0 2.8 2.7l.7-1 1.9.7v1.1c0 .7-.6 1.3-1.4 1.2a8 8 0 0 1-6-5.9c-.1-.8.5-1.4 1.2-1.4Z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.4a11 11 0 0 0 6.1 6.1l1.4-2 4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2Z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11l-1-12Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 13 4.5 4.5L19 7"/></symbol>
+  <symbol id="i-delivery" viewBox="0 0 24 24"><path d="M3 7h10v9H3zM13 10h4l3 3v3h-7z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></symbol>
+  <symbol id="i-takeaway" viewBox="0 0 24 24"><path d="M6 8h12l-1 11H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+  <symbol id="i-seat" viewBox="0 0 24 24"><path d="M4 10h16"/><path d="M6 10V5h12v5"/><path d="M7 10v8M17 10v8"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-cloud-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M18.5 14.5A4 4 0 0 0 17 6.9 6 6 0 0 0 6.8 8"/><path d="M5.5 9A4.5 4.5 0 0 0 6 18h9"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 10l6.1-.9L12 3.5Z"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<!-- ============ top bar ============ -->
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="#top" aria-label="Magos Burgers and Shakes — back to top">
+      <span class="brand__mark" aria-hidden="true">M</span>
+      <span class="brand__text">
+        <strong>Magos</strong>
+        <small>Burgers &amp; Shakes</small>
+      </span>
+    </a>
+    <div class="topbar__meta" id="statusMeta">
+      <svg width="13" height="13" aria-hidden="true"><use href="#i-pin"/></svg>
+      <span>Millenium Mall, Bulawayo</span>
+    </div>
+    <a class="topbar__link" id="topCall" href="tel:+263780814597">
+      <svg width="14" height="14" aria-hidden="true"><use href="#i-phone"/></svg>
+      <span>078 081 4597</span>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- ============ hero ============ -->
+  <section class="hero">
+    <div class="wrap hero__inner">
+      <div>
+        <div class="hero__eyebrow"><span class="dot" aria-hidden="true"></span> <span id="openState">Open today · order on WhatsApp</span></div>
+        <h1>Burgers<br>&amp; <span class="amp">Shakes</span></h1>
+        <p class="hero__sub">Flame-grilled in Bulawayo. Build your order below, tap through to WhatsApp, and we&rsquo;ll have it ready &mdash; <em>delivery, takeaway or a seat inside.</em></p>
+
+        <div class="rating-card">
+          <div class="rating-card__score">3.9</div>
+          <div class="rating-card__body">
+            <div class="stars" aria-label="Rated 3.9 out of 5">
+              <svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg class="half" aria-hidden="true"><use href="#i-star"/></svg>
+            </div>
+            <small>13 Google reviews &middot; Hamburger restaurant &middot; $1&ndash;10 per person</small>
+          </div>
+        </div>
+
+        <div class="hero__actions">
+          <a class="btn btn--amber" href="#menu">See the menu <svg aria-hidden="true"><use href="#i-bag"/></svg></a>
+          <a class="btn btn--ghost" id="heroDirections" href="https://www.google.com/maps/search/?api=1&amp;query=Magos+Burgers+and+Shakes+Millenium+Mall+Bulawayo" target="_blank" rel="noopener">
+            Get directions <svg aria-hidden="true"><use href="#i-pin"/></svg>
+          </a>
+        </div>
+        <p class="hero__note"><svg width="13" height="13" aria-hidden="true" style="fill:none;stroke:currentColor;stroke-width:2"><use href="#i-clock"/></svg> Closes 18:00 &middot; Millenium Mall, G. Silundika Street</p>
+      </div>
+
+  <div class="hero__art" role="img" aria-label="Hero Signarure Burger">
+   <img 
+    src="Hero Signature Burger.png" 
+    alt="Hero Signature Burger"
+    width="800"
+    height="400"
+    loading="eager"
+    class="hero__image"
+  />
+</div>
+
+    </div>
+  </section>
+
+  <!-- ============ menu ============ -->
+  <section class="sec sec--tight" id="menu" aria-labelledby="menuTitle">
+    <div class="wrap">
+      <div class="sec__head">
+        <div>
+          <p class="sec__eyebrow">The board</p>
+          <h2 id="menuTitle">Pick your order</h2>
+        </div>
+        <p class="sec__sub" id="menuSummary">Prices in USD, exactly as on the shop&rsquo;s menu.</p>
+      </div>
+
+      <div class="offline-note" id="offlineBanner">
+        <svg aria-hidden="true"><use href="#i-cloud-off"/></svg>
+        <span><strong>You&rsquo;re offline.</strong> The full menu still works &mdash; build your order now and WhatsApp will open when you reconnect.</span>
+      </div>
+
+      <div class="sticky-tools" id="tools">
+        <div class="search" id="searchWrap">
+          <svg aria-hidden="true"><use href="#i-search"/></svg>
+          <label class="sr-only" for="q">Search the menu</label>
+          <input id="q" type="search" placeholder="Search burgers, shakes, chips…" autocomplete="off" enterkeyhint="search">
+          <button class="search__clear" id="clearQ" type="button" aria-label="Clear search">
+            <svg aria-hidden="true"><use href="#i-x"/></svg>
+          </button>
+        </div>
+        <div class="filters" id="filters" role="group" aria-label="Menu categories"></div>
+      </div>
+
+      <div class="menu-head">
+        <span id="resultCount" aria-live="polite">24 items</span>
+        <span id="cartHint">Tap <strong>Add</strong> on anything you want</span>
+      </div>
+
+      <div class="menu-grid" id="grid"></div>
+      <div class="empty" id="emptyState" hidden>
+        <strong>Nothing matched</strong>
+        <span id="emptyMsg">Try a different word, or clear the search.</span>
+      </div>
+
+      <div class="combo-strip">
+        <div>
+          <h3>Feeding the table?</h3>
+          <p>The $12 platter stacks a T-bone, burger, wrap, chicken and chips &mdash; the biggest thing on the board. Or build your own order from any category.</p>
+        </div>
+        <button class="btn btn--amber" id="comboBtn" type="button">Start with a platter <svg aria-hidden="true"><use href="#i-bag"/></svg></button>
+      </div>
+
+      <p class="note"><b>Prices:</b> taken from the shop&rsquo;s Google Maps listing and menu board. Where two prices are shown (e.g. $3.00 / $3.50) they are the regular and large portion &mdash; pick the size when you add it. Final total is confirmed by the shop on WhatsApp.</p>
+    </div>
+  </section>
+
+  <!-- ============ find us ============ -->
+  <section class="sec" id="find" aria-labelledby="findTitle">
+    <div class="wrap">
+      <div class="sec__head">
+        <div>
+          <p class="sec__eyebrow">Find us</p>
+          <h2 id="findTitle">Collection &amp; delivery</h2>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="card">
+          <p class="card__label">The shop</p>
+          <h3>Millenium Mall</h3>
+          <p>G. Silundika Street, between 5th &amp; 6th Avenue<br>Bulawayo, Zimbabwe</p>
+          <ul class="hours" style="margin-top:14px">
+            <li><span>Rating</span><span>3.9 / 5 &middot; 13 reviews</span></li>
+            <li><span>Category</span><span>Hamburger restaurant</span></li>
+            <li><span>Price range</span><span>$1&ndash;10 per person</span></li>
+            <li class="today"><span>Today</span><span>Closes 18:00</span></li>
+          </ul>
+          <div class="contact-row">
+            <a href="tel:+263780814597"><svg aria-hidden="true"><use href="#i-phone"/></svg> 078 081 4597</a>
+            <a href="tel:+26373865210"><svg aria-hidden="true"><use href="#i-phone"/></svg> 073 865 210</a>
+          </div>
+          <div style="width: 100%; overflow: hidden; height: 450px;">
+            <iframe 
+              src="https://maps.app.goo.gl/xyfpZUahiZwyd7wQ7" 
+              width="100%" 
+              height="450" 
+              style="border:0;" 
+              allowfullscreen="" 
+              loading="lazy">
+           </iframe>
+         </div>
+
+        </div>
+
+        <div class="card">
+          <p class="card__label">How it works</p>
+          <h3>Order in three taps</h3>
+          <ul class="hours">
+            <li><span>1. Pick your items</span><span>Menu above</span></li>
+            <li><span>2. Add name &amp; time</span><span>Order form</span></li>
+            <li><span>3. Send on WhatsApp</span><span>One tap</span></li>
+          </ul>
+          <p class="note" style="margin-top:12px">Nothing is charged in the app and no payment details are collected. Your order is sent as a WhatsApp message to the shop, who confirm the total, delivery fee and timing.</p>
+          <div class="contact-row">
+            <button class="btn btn--green btn--sm" id="startOrder" type="button">Start an order <svg aria-hidden="true"><use href="#i-wa"/></svg></button>
+            <a class="btn btn--dark btn--sm" href="https://www.google.com/maps/search/?api=1&amp;query=Magos+Burgers+and+Shakes+Millenium+Mall+Bulawayo" target="_blank" rel="noopener">Directions</a>
+          </div>
+          <p class="note"><b>Hours:</b> The listing shows a closing time of 18:00. Confirm the day&rsquo;s trading hours on WhatsApp before you travel.</p>
+
+          <div class="install" id="installBar">
+            <span>Install Magos on your phone for one-tap ordering, even offline.</span>
+            <button type="button" id="installBtn">Install</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__top">
+      <a class="brand" href="#top" aria-label="Magos Burgers and Shakes">
+        <span class="brand__mark" aria-hidden="true">M</span>
+        <span class="brand__text"><strong>Magos</strong><small>Burgers &amp; Shakes</small></span>
+      </a>
+    </div>
+    <p><strong>Millenium Mall, G. Silundika Street, Bulawayo.</strong> Orders are placed by WhatsApp on <a href="tel:+263780814597" style="color:var(--amber)">078 081 4597</a>.</p>
+    <p>Menu prices come from the shop&rsquo;s Google Maps listing and may change &mdash; the shop confirms the final total on WhatsApp. This app stores nothing on a server; your cart and last order stay on this device.</p>
+  </div>
+</footer>
+
+<!-- ============ mobile cart bar ============ -->
+<div class="cartbar" id="cartbar">
+  <button class="btn btn--dark cartbar__btn" id="cartbarBtn" type="button">
+    <span class="cartbar__count" id="cartbarCount">0</span>
+    <span>View order</span>
+    <span class="cartbar__total" id="cartbarTotal">$0.00</span>
+  </button>
+</div>
+
+<!-- ============ desktop floating cart ============ -->
+<button class="fab" id="fab" type="button">
+  <svg width="18" height="18" aria-hidden="true" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-bag"/></svg>
+  <span>Your order</span>
+  <span class="fab__count" id="fabCount">0</span>
+</button>
+
+<!-- ============ desktop cart panel ============ -->
+<aside class="panel" id="panel" aria-label="Your order" aria-hidden="true">
+  <div class="panel__head">
+    <h2>Your order</h2>
+    <button type="button" id="panelClose" aria-label="Close cart"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="panel__body" id="panelBody"></div>
+  <div class="panel__foot">
+    <div class="total-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Total</span>
+      <strong id="panelTotal" style="font-family:var(--font-display);font-size:1.4rem">$0.00</strong>
+    </div>
+    <button class="btn btn--amber btn--block" id="panelCheckout" type="button" disabled>Continue <svg aria-hidden="true"><use href="#i-check"/></svg></button>
+  </div>
+</aside>
+
+<!-- ============ order modal ============ -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal__scrim" data-close></div>
+  <div class="modal__panel">
+    <div class="modal__grab" aria-hidden="true"></div>
+
+    <!-- form view -->
+    <div id="formView" style="display:flex;flex-direction:column;min-height:0;flex:1 1 auto">
+      <div class="modal__head">
+        <div>
+          <h2 id="modalTitle">Your order</h2>
+          <p>Sent straight to the shop on WhatsApp</p>
+        </div>
+        <button class="modal__close" type="button" data-close aria-label="Close"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+
+      <div class="modal__body">
+        <div class="callout callout--offline" id="modalOffline">
+          <svg aria-hidden="true"><use href="#i-cloud-off"/></svg>
+          <span>You&rsquo;re offline. You can still build the order &mdash; it will open WhatsApp as soon as you&rsquo;re back online.</span>
+        </div>
+
+        <div class="summary" id="modalSummary">
+          <div class="summary__head">
+            <span>Order items</span>
+            <button type="button" id="editItems">Change items</button>
+          </div>
+          <ul id="modalItems"></ul>
+          <div class="summary__total"><span>Total</span><strong id="modalTotal">$0.00</strong></div>
+        </div>
+
+        <form id="orderForm" novalidate>
+          <div class="field" id="f-name">
+            <label for="custName">Full name</label>
+            <input id="custName" name="name" type="text" autocomplete="name" placeholder="e.g. Thabo Ncube" required>
+            <p class="field__err">Please tell us your name.</p>
+          </div>
+
+          <div class="field" id="f-phone">
+            <label for="custPhone">Phone / WhatsApp number</label>
+            <input id="custPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 077 123 4567" required>
+            <p class="field__err">Enter a phone number we can reach you on.</p>
+          </div>
+
+          <div class="field-row">
+            <div class="field" id="f-date">
+              <label for="orderDate">Date</label>
+              <input id="orderDate" name="date" type="date" required>
+              <p class="field__err">Choose a date.</p>
+            </div>
+            <div class="field" id="f-time">
+              <label for="orderTime">Time</label>
+              <input id="orderTime" name="time" type="time" required>
+              <p class="field__err">Choose a time.</p>
+            </div>
+          </div>
+
+          <div class="field" id="f-type">
+            <span class="field-set__legend" id="typeLegend">Order type</span>
+            <div class="seg" role="radiogroup" aria-labelledby="typeLegend">
+              <input type="radio" name="type" id="t-delivery" value="Delivery">
+              <label for="t-delivery"><svg aria-hidden="true"><use href="#i-delivery"/></svg> Delivery</label>
+              <input type="radio" name="type" id="t-takeaway" value="Takeaway" checked>
+              <label for="t-takeaway"><svg aria-hidden="true"><use href="#i-takeaway"/></svg> Takeaway</label>
+              <input type="radio" name="type" id="t-seat" value="Seat-in">
+              <label for="t-seat"><svg aria-hidden="true"><use href="#i-seat"/></svg> Seat-in</label>
+            </div>
+          </div>
+
+          <div class="field" id="f-address" hidden>
+            <label for="custAddress">Delivery address</label>
+            <textarea id="custAddress" name="address" rows="2" placeholder="House / street, suburb, nearest landmark"></textarea>
+            <p class="field__err">We need an address for delivery.</p>
+          </div>
+
+          <div class="field">
+            <label for="custNotes">Notes <span class="opt">— optional</span></label>
+            <textarea id="custNotes" name="notes" rows="2" placeholder="No onions, extra sauce, call when outside…"></textarea>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal__foot">
+        <div class="total-row"><span>Total</span><strong id="footTotal">$0.00</strong></div>
+        <button class="btn btn--green btn--block" id="sendBtn" type="button">
+          Order via WhatsApp <svg aria-hidden="true"><use href="#i-wa"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- success view -->
+    <div id="successView" class="success" style="display:none">
+      <div class="success__ring">
+        <svg viewBox="0 0 52 52" aria-hidden="true">
+          <circle class="circle" cx="26" cy="26" r="24"/>
+          <path class="tick" d="M15 27.5l7.5 7L37.5 19"/>
+        </svg>
+      </div>
+      <h2>Order successful</h2>
+      <p class="success__sub" id="successSub">Your order is on its way to the shop on WhatsApp. Keep the chat open — they&rsquo;ll confirm the total and timing.</p>
+      <div class="success__ref">Order ref <b id="orderRef">—</b></div>
+      <div class="summary" id="successSummary"></div>
+      <div class="success__actions">
+        <button class="btn btn--amber" type="button" id="againBtn">Place another order</button>
+        <button class="btn btn--dark" type="button" id="reopenWa">Reopen WhatsApp <svg aria-hidden="true"><use href="#i-wa"/></svg></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.v105.js"></script>
+</body>
+</html>
