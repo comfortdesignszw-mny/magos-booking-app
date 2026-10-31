@@ -146,7 +146,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 
 /* hero photo placeholder */
 .hero__art{
-  margin-top:10px;border-radius:var(--r-lg);overflow:hidden;
+  margin-top:26px;border-radius:var(--r-lg);overflow:hidden;
   border:1px dashed rgba(240,168,30,.5);background:rgba(240,168,30,.06);
   min-height:190px;display:grid;place-items:center;padding:22px;text-align:center;
 }
@@ -495,14 +495,119 @@ ul,ol{margin:0;padding:0;list-style:none}
 }
 .summary ul{max-height:180px;overflow-y:auto}
 .summary li{
-  display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:start;
+  display:grid;grid-template-columns:auto 1fr auto auto;gap:9px;align-items:center;
   padding:.55rem .8rem;border-top:1px solid rgba(20,17,13,.06);font-size:.82rem;
 }
 .summary li:first-child{border-top:none}
-.summary .li-qty{font-weight:700;color:var(--amber-deep);font-variant-numeric:tabular-nums;font-size:.78rem;padding-top:1px}
-.summary .li-name{line-height:1.3}
+.summary .li-qty{font-weight:700;color:var(--amber-deep);font-variant-numeric:tabular-nums;font-size:.78rem}
+.summary .li-name{line-height:1.3;min-width:0}
 .summary .li-name small{display:block;font-size:.68rem;color:var(--muted);margin-top:1px}
 .summary .li-amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* Remove control on every order line. Always visible (never hover-only),
+   and a real 40px tap target at every width. */
+.li-remove{
+  display:inline-grid;place-items:center;
+  width:40px;height:40px;min-width:40px;min-height:40px;
+  padding:0;margin:-6px -6px -6px 0;
+  border:1.5px solid rgba(180,64,42,.28);border-radius:10px;
+  background:rgba(180,64,42,.07);color:var(--rust);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:background-color .15s,border-color .15s,color .15s;
+}
+.li-remove svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.li-remove:hover,.li-remove:focus-visible{background:var(--rust);border-color:var(--rust);color:var(--cream)}
+.li-remove:active{transform:scale(.94)}
+@media (max-width:400px){
+  .summary li{gap:7px;padding:.6rem .7rem}
+  .summary .li-amt{font-size:.8rem}
+}
+.summary li.is-empty{grid-template-columns:auto 1fr;color:var(--muted);font-style:italic}
+
+/* ===================== legal documents ===================== */
+.legal{
+  position:fixed;inset:0;z-index:120;display:none;
+  align-items:flex-end;justify-content:center;
+}
+.legal.open{display:flex}
+.legal__scrim{position:absolute;inset:0;background:rgba(20,17,13,.66);backdrop-filter:blur(3px);animation:fadeIn .2s ease}
+.legal__panel{
+  position:relative;width:100%;max-width:680px;max-height:92vh;
+  background:var(--cream);border-radius:22px 22px 0 0;
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:slideUp .3s cubic-bezier(.22,.7,.3,1);box-shadow:var(--shadow-lg);
+}
+@media (min-width:700px){
+  .legal{align-items:center;padding:24px}
+  .legal__panel{border-radius:20px;max-height:88vh;animation:zoomIn .24s ease}
+}
+.legal__head{
+  display:flex;align-items:flex-start;gap:12px;padding:16px 18px 13px;
+  border-bottom:1px solid var(--line);flex:0 0 auto;background:var(--cream-2);
+}
+.legal__head h2{font-size:1.2rem;line-height:1.05}
+.legal__head p{font-size:.68rem;color:var(--muted);margin-top:4px;font-family:var(--font-body);text-transform:none;letter-spacing:0}
+.legal__body{
+  padding:18px 20px 30px;overflow-y:auto;flex:1 1 auto;-webkit-overflow-scrolling:touch;
+  font-size:.86rem;line-height:1.62;color:#3A342B;
+}
+.legal__body h3{
+  font-family:var(--font-body);font-size:.72rem;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--amber-deep);margin:22px 0 7px;
+}
+.legal__body h3:first-child{margin-top:0}
+.legal__body p{margin:0 0 10px}
+.legal__body ul{margin:0 0 12px;padding-left:0}
+.legal__body li{position:relative;padding-left:16px;margin-bottom:6px}
+.legal__body li::before{content:"";position:absolute;left:2px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--amber)}
+.legal__body strong{color:var(--ink);font-weight:700}
+.legal__body a{color:var(--amber-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.legal__body .legal__note{
+  background:rgba(240,168,30,.11);border:1px solid rgba(210,135,10,.28);
+  border-radius:10px;padding:11px 13px;font-size:.79rem;line-height:1.5;margin:0 0 16px;color:#6B4A00;
+}
+.legal__body .legal__meta{
+  font-size:.72rem;color:var(--muted);border-top:1px solid var(--line);
+  padding-top:12px;margin-top:22px;
+}
+.legal__foot{
+  padding:12px 18px calc(12px + var(--safe-b));border-top:1px solid var(--line);
+  background:var(--cream-2);flex:0 0 auto;display:flex;gap:9px;
+}
+.legal__foot .btn{flex:1}
+@media (max-width:400px){
+  .legal__body{padding:16px 15px 26px;font-size:.83rem}
+  .legal__head{padding:14px 15px 12px}
+  .legal__head h2{font-size:1.08rem}
+}
+
+/* consent line under every order action */
+.consent{
+  font-size:.68rem;line-height:1.45;color:var(--muted);text-align:center;
+  margin:9px 0 0;
+}
+.consent a{
+  color:var(--amber-deep);font-weight:700;text-decoration:underline;
+  text-underline-offset:2px;cursor:pointer;
+}
+.consent a:hover{color:var(--rust)}
+.foot .consent{text-align:left;margin-top:14px;color:var(--muted-dark)}
+.foot .consent a{color:var(--amber)}
+.foot__legal{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(247,239,222,.14)}
+.foot__legal button{
+  border:none;background:none;padding:0;cursor:pointer;color:var(--cream);
+  font-size:.78rem;font-weight:700;text-decoration:underline;text-underline-offset:3px;
+  font-family:var(--font-body);
+}
+.foot__legal button:hover{color:var(--amber)}
+.foot__copy{margin-top:16px;padding-top:14px;border-top:1px solid rgba(247,239,222,.14);font-size:.74rem;color:var(--muted-dark)}
+.foot__copy strong{color:var(--cream);font-weight:700}
+.foot__credit{
+  margin-top:5px;font-size:.72rem;font-style:italic;color:var(--muted-dark);
+  letter-spacing:.01em;
+}
+.foot__credit .heart{color:var(--rust);font-style:normal}
+
 .summary__total{
   display:flex;justify-content:space-between;align-items:baseline;
   padding:.6rem .8rem;border-top:1.5px solid var(--line);
@@ -578,10 +683,16 @@ ul,ol{margin:0;padding:0;list-style:none}
 .cart-list .qty button{width:26px;height:27px;font-size:.95rem}
 .cart-list .qty output{min-width:20px;font-size:.78rem}
 .cart-list__remove{
-  border:none;background:none;cursor:pointer;font-size:.65rem;color:var(--muted);
-  text-decoration:underline;padding:0;
+  display:inline-flex;align-items:center;gap:5px;
+  min-height:40px;padding:0 11px;
+  border:1.5px solid rgba(180,64,42,.28);border-radius:9px;
+  background:rgba(180,64,42,.07);color:var(--rust);
+  cursor:pointer;font-size:.7rem;font-weight:700;letter-spacing:.02em;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .15s,border-color .15s,color .15s;
 }
-.cart-list__remove:hover{color:var(--rust)}
+.cart-list__remove svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.cart-list__remove:hover,.cart-list__remove:focus-visible{background:var(--rust);border-color:var(--rust);color:var(--cream)}
 
 /* floating desktop cart button */
 .fab{
@@ -662,9 +773,9 @@ ul,ol{margin:0;padding:0;list-style:none}
       <svg width="13" height="13" aria-hidden="true"><use href="#i-pin"/></svg>
       <span>Millenium Mall, Bulawayo</span>
     </div>
-    <a class="topbar__link" id="topCall" href="tel:+263772865210">
+    <a class="topbar__link" id="topCall" href="tel:+263780814597">
       <svg width="14" height="14" aria-hidden="true"><use href="#i-phone"/></svg>
-      <span>0773865210</span>
+      <span>078 081 4597</span>
     </a>
   </div>
 </header>
@@ -694,20 +805,15 @@ ul,ol{margin:0;padding:0;list-style:none}
             Get directions <svg aria-hidden="true"><use href="#i-pin"/></svg>
           </a>
         </div>
-        <p class="hero__note"><svg width="13" height="13" aria-hidden="true" style="fill:none;stroke:currentColor;stroke-width:2"><use href="#i-clock"/></svg> Opens 08:00 - Closes 18:00 &middot; Millenium Mall, G. Silundika Street</p>
+        <p class="hero__note"><svg width="13" height="13" aria-hidden="true" style="fill:none;stroke:currentColor;stroke-width:2"><use href="#i-clock"/></svg> Closes 18:00 &middot; Millenium Mall, G. Silundika Street</p>
       </div>
 
-  <div class="hero__art" role="img" aria-label="Hero Signarure Burger">
-   <img 
-    src="Hero Signature Burger.png" 
-    alt="Hero Signature Burger"
-    width="800"
-    height="400"
-    loading="eager"
-    class="hero__image"
-  />
-</div>
-
+      <div class="hero__art ph" role="img" aria-label="Placeholder for a hero food photograph">
+        <span class="ph__tag">Placeholder</span>
+        <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
+        <span class="ph__title">Hero food photo</span>
+        <span class="ph__hint">Your best burger &amp; shake shot — 1200 &times; 1200px</span>
+      </div>
     </div>
   </section>
 
@@ -785,19 +891,14 @@ ul,ol{margin:0;padding:0;list-style:none}
           </ul>
           <div class="contact-row">
             <a href="tel:+263780814597"><svg aria-hidden="true"><use href="#i-phone"/></svg> 078 081 4597</a>
-            <a href="tel:+263773865210"><svg aria-hidden="true"><use href="#i-phone"/></svg> 077 386 5210</a>
+            <a href="tel:+26373865210"><svg aria-hidden="true"><use href="#i-phone"/></svg> 073 865 210</a>
           </div>
-          <div style="width: 100%; overflow: hidden; height: 450px;">
-            <iframe 
-              src="https://maps.app.goo.gl/xyfpZUahiZwyd7wQ7" 
-              width="100%" 
-              height="450" 
-              style="border:0;" 
-              allowfullscreen="" 
-              loading="lazy">
-           </iframe>
-         </div>
-
+          <div class="map-ph ph" role="img" aria-label="Placeholder for an embedded Google Map">
+            <span class="ph__tag">Placeholder</span>
+            <svg class="ph__icon" aria-hidden="true"><use href="#i-pin"/></svg>
+            <span class="ph__title">Google Maps embed</span>
+            <span class="ph__hint">Drop your map iframe here — or tap Get directions</span>
+          </div>
         </div>
 
         <div class="card">
@@ -808,12 +909,12 @@ ul,ol{margin:0;padding:0;list-style:none}
             <li><span>2. Add name &amp; time</span><span>Order form</span></li>
             <li><span>3. Send on WhatsApp</span><span>One tap</span></li>
           </ul>
-          <p class="note" style="margin-top:12px">Nothing is charged in the app, and no payment details are collected. Your order is sent as a WhatsApp message to the shop, who confirm the total, delivery fee and timing.</p>
+          <p class="note" style="margin-top:12px">Nothing is charged in the app and no payment details are collected. Your order is sent as a WhatsApp message to the shop, who confirm the total, delivery fee and timing.</p>
           <div class="contact-row">
             <button class="btn btn--green btn--sm" id="startOrder" type="button">Start an order <svg aria-hidden="true"><use href="#i-wa"/></svg></button>
             <a class="btn btn--dark btn--sm" href="https://www.google.com/maps/search/?api=1&amp;query=Magos+Burgers+and+Shakes+Millenium+Mall+Bulawayo" target="_blank" rel="noopener">Directions</a>
           </div>
-          <p class="note"><b>Hours:</b> From 08:00 to 18:00. Confirm the day&rsquo;s trading hours on WhatsApp before you travel.</p>
+          <p class="note"><b>Hours:</b> The listing shows a closing time of 18:00. Confirm the day&rsquo;s trading hours on WhatsApp before you travel.</p>
 
           <div class="install" id="installBar">
             <span>Install Magos on your phone for one-tap ordering, even offline.</span>
@@ -833,8 +934,23 @@ ul,ol{margin:0;padding:0;list-style:none}
         <span class="brand__text"><strong>Magos</strong><small>Burgers &amp; Shakes</small></span>
       </a>
     </div>
-    <p><strong>Millenium Mall, G. Silundika Street, Bulawayo.</strong> Orders are placed by WhatsApp on <a href="tel:+263773865210" style="color:var(--amber)">0773865210</a>.</p>
+    <p><strong>Millenium Mall, G. Silundika Street, between 5th &amp; 6th Avenue, Bulawayo.</strong> Orders are placed by WhatsApp on <a href="tel:+263780814597" style="color:var(--amber)">078 081 4597</a> or <a href="tel:+26373865210" style="color:var(--amber)">073 865 210</a>.</p>
     <p>Menu prices come from the shop&rsquo;s Google Maps listing and may change &mdash; the shop confirms the final total on WhatsApp. This app stores nothing on a server; your cart and last order stay on this device.</p>
+
+    <div class="foot__legal">
+      <button type="button" data-legal="terms">Terms of Use</button>
+      <button type="button" data-legal="privacy">Privacy Policy</button>
+      <a href="tel:+263780814597" style="color:var(--cream);font-size:.78rem;font-weight:700;text-decoration:underline;text-underline-offset:3px">Call the shop</a>
+    </div>
+
+    <p class="consent">By placing an order you agree to our
+      <a href="#" data-legal="terms">Terms of Use</a> and
+      <a href="#" data-legal="privacy">Privacy Policy</a>.</p>
+
+    <div class="foot__copy">
+      <strong>&copy;2026 Magos Burger &amp; Shakes. All Rights Reserved</strong>
+      <div class="foot__credit">Developed with <span class="heart" aria-label="love">&hearts;</span> by Comfort Designs</div>
+    </div>
   </div>
 </footer>
 
@@ -867,6 +983,9 @@ ul,ol{margin:0;padding:0;list-style:none}
       <strong id="panelTotal" style="font-family:var(--font-display);font-size:1.4rem">$0.00</strong>
     </div>
     <button class="btn btn--amber btn--block" id="panelCheckout" type="button" disabled>Continue <svg aria-hidden="true"><use href="#i-check"/></svg></button>
+    <p class="consent">By ordering you agree to our
+      <a href="#" data-legal="terms">Terms of Use</a> and
+      <a href="#" data-legal="privacy">Privacy Policy</a>.</p>
   </div>
 </aside>
 
@@ -957,6 +1076,9 @@ ul,ol{margin:0;padding:0;list-style:none}
         <button class="btn btn--green btn--block" id="sendBtn" type="button">
           Order via WhatsApp <svg aria-hidden="true"><use href="#i-wa"/></svg>
         </button>
+        <p class="consent">By ordering you agree to our
+          <a href="#" data-legal="terms">Terms of Use</a> and
+          <a href="#" data-legal="privacy">Privacy Policy</a>.</p>
       </div>
     </div>
 
@@ -981,8 +1103,191 @@ ul,ol{margin:0;padding:0;list-style:none}
   </div>
 </div>
 
+<!-- ============ Terms of Use ============ -->
+<div class="legal" id="legalTerms" role="dialog" aria-modal="true" aria-labelledby="legalTermsTitle" aria-hidden="true">
+  <div class="legal__scrim" data-legal-close></div>
+  <div class="legal__panel">
+    <div class="legal__head">
+      <div>
+        <h2 id="legalTermsTitle">Terms of Use</h2>
+        <p>Magos Burgers &amp; Shakes &middot; Last updated 31 October 2026</p>
+      </div>
+      <button class="modal__close" type="button" data-legal-close aria-label="Close Terms of Use"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="legal__body">
+      <p class="legal__note">Please read these terms before you place an order. By using this app or sending an order you agree to them.</p>
+
+      <h3>1. Who we are</h3>
+      <p>This app is operated by <strong>Magos Burgers &amp; Shakes</strong>, a food outlet trading at <strong>Millenium Mall, G. Silundika Street, between 5th &amp; 6th Avenue, Bulawayo, Zimbabwe</strong>. You can reach us on <a href="tel:+263780814597">078 081 4597</a> or <a href="tel:+26373865210">073 865 210</a>.</p>
+
+      <h3>2. What this app does</h3>
+      <p>This app is a <strong>menu and order-building tool</strong>. It lets you browse our menu, build an order, and send that order to us as a WhatsApp message. It is not an online shop: it does not take payment, does not process card details, and does not create a binding sale on its own.</p>
+
+      <h3>3. Ordering and order confirmation</h3>
+      <ul>
+        <li>When you tap <strong>Order via WhatsApp</strong>, the app opens WhatsApp with your order pre-written. <strong>You must press send in WhatsApp</strong> for the order to reach us.</li>
+        <li>An order is only <strong>accepted once we reply in WhatsApp to confirm it</strong>. Until we confirm, no contract exists between you and us.</li>
+        <li>We may decline or amend an order &mdash; for example if an item has sold out, if the requested time is not possible, or if the delivery address is outside our area.</li>
+        <li>Each order is given a reference (for example <strong>MG-A1B2</strong>). Please quote it when you contact us about that order.</li>
+      </ul>
+
+      <h3>4. Prices and payment</h3>
+      <ul>
+        <li>All prices are shown in <strong>United States Dollars (USD)</strong>.</li>
+        <li>Prices in the app are taken from our published menu and <strong>may change without notice</strong>. The price we confirm on WhatsApp is the price that applies.</li>
+        <li>Delivery fees are <strong>not included</strong> in the total shown in the app. We will tell you the delivery fee on WhatsApp before you confirm.</li>
+        <li>Payment is made directly to us on collection or delivery, in the manner we agree on WhatsApp. This app never asks for and never stores card or bank details.</li>
+      </ul>
+
+      <h3>5. Availability</h3>
+      <p>All items are subject to availability. Menu items, portion sizes and ingredients may change. If something you ordered is unavailable we will offer an alternative or remove it from the order and tell you the revised total.</p>
+
+      <h3>6. Takeaway, seat-in and delivery</h3>
+      <ul>
+        <li><strong>Takeaway</strong> &mdash; collect from Millenium Mall at the time we confirm. Please bring your order reference.</li>
+        <li><strong>Seat-in</strong> &mdash; we will hold a table for the time you requested, subject to availability. Tables are held for 15 minutes past the booked time.</li>
+        <li><strong>Delivery</strong> &mdash; available within the areas we confirm on WhatsApp. You must give a complete address and a reachable phone number. Delivery times are estimates and may be affected by traffic, weather or demand. Someone must be available to receive the order at the address you gave.</li>
+      </ul>
+
+      <h3>7. Cancellations and changes</h3>
+      <ul>
+        <li>You may cancel or change an order <strong>free of charge before we confirm it</strong> on WhatsApp.</li>
+        <li>Once we have confirmed an order and begun preparing it, cancellation may not be possible. Where food has already been prepared, we may ask you to pay for it.</li>
+        <li>If we cannot fulfil a confirmed order, we will tell you as soon as possible and you will not be charged for it.</li>
+        <li>If an order arrives incorrect or is not of acceptable quality, contact us on the same day with your order reference and we will put it right.</li>
+      </ul>
+
+      <h3>8. Allergies and food information</h3>
+      <p>Our food is prepared in a kitchen that handles <strong>gluten, dairy, eggs, soya, nuts and other allergens</strong>, so we cannot guarantee that any item is free from traces. If you have an allergy or dietary requirement, tell us in the order notes <em>and</em> confirm it on WhatsApp before ordering. Menu descriptions are a guide and are not a substitute for asking us directly.</p>
+
+      <h3>9. Using the app</h3>
+      <ul>
+        <li>You must be at least 18 years old, or have permission from a parent or guardian, to place an order.</li>
+        <li>You agree to give accurate contact and delivery details, and not to use the app for anything unlawful, abusive or fraudulent.</li>
+        <li>You may install the app on your own device. Please do not copy, resell or redistribute it.</li>
+      </ul>
+
+      <h3>10. Offline use</h3>
+      <p>The app is designed to work without a connection. Your cart and last order are saved on your own device, and an order built while offline is only sent once you reconnect and press send in WhatsApp. We are not responsible for an order that was never sent because you remained offline.</p>
+
+      <h3>11. Our responsibility to you</h3>
+      <p>We take care to keep the menu and prices accurate, but the app is provided &ldquo;as is&rdquo;. To the extent the law allows, we are not liable for indirect losses arising from use of the app, from a delay in WhatsApp delivering a message, or from a device or connection failure. Nothing in these terms limits any right you have under Zimbabwean consumer law, including your right to food that is safe and as described.</p>
+
+      <h3>12. Changes to these terms</h3>
+      <p>We may update these terms from time to time. The version shown in the app at the time you order is the version that applies to that order.</p>
+
+      <h3>13. Contact</h3>
+      <p><strong>Magos Burgers &amp; Shakes</strong><br>Millenium Mall, G. Silundika Street, between 5th &amp; 6th Avenue, Bulawayo, Zimbabwe<br>Phone / WhatsApp: <a href="tel:+263780814597">078 081 4597</a> &middot; <a href="tel:+26373865210">073 865 210</a></p>
+
+      <p class="legal__meta">These terms are governed by the laws of Zimbabwe. See also our <a href="#" data-legal="privacy">Privacy Policy</a>.</p>
+    </div>
+    <div class="legal__foot">
+      <button class="btn btn--dark" type="button" data-legal-close>Close</button>
+      <button class="btn btn--amber" type="button" data-legal="privacy">Privacy Policy</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Privacy Policy ============ -->
+<div class="legal" id="legalPrivacy" role="dialog" aria-modal="true" aria-labelledby="legalPrivacyTitle" aria-hidden="true">
+  <div class="legal__scrim" data-legal-close></div>
+  <div class="legal__panel">
+    <div class="legal__head">
+      <div>
+        <h2 id="legalPrivacyTitle">Privacy Policy</h2>
+        <p>Magos Burgers &amp; Shakes &middot; Last updated 31 October 2026</p>
+      </div>
+      <button class="modal__close" type="button" data-legal-close aria-label="Close Privacy Policy"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="legal__body">
+      <p class="legal__note">In short: this app keeps your cart on your own phone, and your order goes to us through WhatsApp. We do not run a customer database and we do not sell your information.</p>
+
+      <h3>1. Who is responsible</h3>
+      <p><strong>Magos Burgers &amp; Shakes</strong>, Millenium Mall, G. Silundika Street, between 5th &amp; 6th Avenue, Bulawayo, Zimbabwe. Phone / WhatsApp: <a href="tel:+263780814597">078 081 4597</a> or <a href="tel:+26373865210">073 865 210</a>.</p>
+
+      <h3>2. What we collect</h3>
+      <p>We only ask for what we need to prepare and deliver your order:</p>
+      <ul>
+        <li><strong>Your name</strong> &mdash; so we know who the order is for.</li>
+        <li><strong>Your phone / WhatsApp number</strong> &mdash; so we can confirm the order and reach you about it.</li>
+        <li><strong>Order details</strong> &mdash; the items, quantities, total, your chosen date and time, and whether it is takeaway, seat-in or delivery.</li>
+        <li><strong>Delivery address</strong> &mdash; only if you choose delivery.</li>
+        <li><strong>Notes</strong> &mdash; anything you type in the notes box, such as &ldquo;no onions&rdquo; or an allergy warning.</li>
+      </ul>
+      <p>We do <strong>not</strong> collect payment card details, bank details, your date of birth, your location, or any advertising identifier. The app has no analytics, no tracking pixels and no advertising.</p>
+
+      <h3>3. How your information is used</h3>
+      <ul>
+        <li>To receive, confirm, prepare and hand over your order.</li>
+        <li>To contact you about that order &mdash; for example to confirm the total, the delivery fee or a change in availability.</li>
+        <li>To deal with a complaint, refund or correction if something goes wrong.</li>
+      </ul>
+      <p>We do not use your details for marketing, and we do not send you promotional messages unless you separately ask us to.</p>
+
+      <h3>4. Where your information is stored</h3>
+      <p>This is the important part, and it is deliberately simple:</p>
+      <ul>
+        <li><strong>On your device.</strong> Your cart, your last order and the name, phone number and address you last used are saved in your browser&rsquo;s local storage on your own phone or computer. This is what lets the app work offline and remember your details next time. <strong>This data never leaves your device unless you send an order.</strong></li>
+        <li><strong>In WhatsApp.</strong> When you press send, your order becomes a WhatsApp message. It is then held by WhatsApp under WhatsApp&rsquo;s own privacy terms, and by us in our WhatsApp Business chat history.</li>
+        <li><strong>We do not operate a customer database.</strong> This app has no server of its own and no account system. We do not upload your cart or your details anywhere.</li>
+      </ul>
+
+      <h3>5. Third-party services</h3>
+      <ul>
+        <li><strong>WhatsApp (Meta).</strong> Orders are delivered through WhatsApp. Your use of WhatsApp is governed by WhatsApp&rsquo;s privacy policy, which we do not control. If you would rather not use WhatsApp, phone us on <a href="tel:+263780814597">078 081 4597</a> and order by voice.</li>
+        <li><strong>Google Maps.</strong> The &ldquo;Get directions&rdquo; link opens Google Maps in a new tab. We do not embed a map, so Google does not receive anything from you until you choose to tap that link. Once you do, Google&rsquo;s privacy policy applies.</li>
+        <li><strong>Your device and browser.</strong> The app is served as a normal web page and can be installed to your home screen. Your browser or operating system may keep its own technical logs, which we do not access.</li>
+      </ul>
+
+      <h3>6. How long we keep it (data retention)</h3>
+      <ul>
+        <li><strong>On your device:</strong> until you clear it. You can remove it at any time by clearing this site&rsquo;s data in your browser settings, or by using the app&rsquo;s own clear option. Uninstalling the app removes it too.</li>
+        <li><strong>In WhatsApp:</strong> for as long as we need the chat to handle your order and any follow-up, and then for a reasonable period for record-keeping. You can delete the chat from your own side at any time.</li>
+        <li>We do not keep your details anywhere else, so there is nothing else to retain.</li>
+      </ul>
+
+      <h3>7. Who we share it with</h3>
+      <p>We do not sell, rent or trade your information. We share it only with:</p>
+      <ul>
+        <li>Our own staff who prepare and deliver your order.</li>
+        <li>A delivery rider, where one is used &mdash; limited to your name, phone number, address and the order itself.</li>
+        <li>WhatsApp, as the channel that carries the message.</li>
+        <li>A authority, if we are legally required to disclose it.</li>
+      </ul>
+
+      <h3>8. Your rights</h3>
+      <p>You may ask us at any time to:</p>
+      <ul>
+        <li>tell you what information we hold about you;</li>
+        <li>correct anything that is wrong;</li>
+        <li>delete the order history we hold in WhatsApp;</li>
+        <li>stop contacting you.</li>
+      </ul>
+      <p>Message or call us on <a href="tel:+263780814597">078 081 4597</a> and we will deal with it. Because we hold no database, most requests can be met immediately. You can also clear everything stored on your own device yourself, without asking us.</p>
+
+      <h3>9. Keeping your information safe</h3>
+      <p>Because the app stores your details only on your own device, the main protection is your device&rsquo;s own lock screen and your WhatsApp account security. Please keep your phone locked and do not place orders from a shared or public device if you would rather your name and number were not saved there.</p>
+
+      <h3>10. Children</h3>
+      <p>The app is intended for adults. If you are under 18, please order with a parent or guardian.</p>
+
+      <h3>11. Changes to this policy</h3>
+      <p>If we change how the app handles information, we will update this page and the date at the top. The version shown when you order is the one that applies.</p>
+
+      <h3>12. Contact us</h3>
+      <p><strong>Magos Burgers &amp; Shakes</strong><br>Millenium Mall, G. Silundika Street, between 5th &amp; 6th Avenue, Bulawayo, Zimbabwe<br>Phone / WhatsApp: <a href="tel:+263780814597">078 081 4597</a> &middot; <a href="tel:+26373865210">073 865 210</a></p>
+
+      <p class="legal__meta">See also our <a href="#" data-legal="terms">Terms of Use</a>.</p>
+    </div>
+    <div class="legal__foot">
+      <button class="btn btn--dark" type="button" data-legal-close>Close</button>
+      <button class="btn btn--amber" type="button" data-legal="terms">Terms of Use</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="app.v105.js"></script>
+<script src="app.v106.js"></script>
 </body>
 </html>
