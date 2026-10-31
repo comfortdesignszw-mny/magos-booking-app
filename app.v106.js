@@ -6,7 +6,7 @@
 /* --------------------------------------------------------------------------
    ██  WHATSAPP NUMBER — CHANGE THIS ONE LINE IF THE SHOP NUMBER CHANGES  ██
    Digits only, full international format, no + and no spaces.
-   078 081 4597  ->  263780814597
+   077 386 5210  ->  263773865210
    -------------------------------------------------------------------------- */
 const MAGOS_WHATSAPP = "263773865210"; // ← single source of truth for the order destination
 
